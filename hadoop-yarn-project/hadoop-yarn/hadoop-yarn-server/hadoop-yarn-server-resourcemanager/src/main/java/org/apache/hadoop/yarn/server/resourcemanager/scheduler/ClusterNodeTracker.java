@@ -293,13 +293,15 @@ public class ClusterNodeTracker<N extends SchedulerNode> {
       if (add) { // added node
         // If we add a node, we must have a max allocation for all resource
         // types
-        reportedMaxAllocation = true;
+        if (node.getRMNode().getState() != NodeState.DECOMMISSIONING) { // do not add a node in calculation if its not in decommission state YARN-11403
+          reportedMaxAllocation = true;
 
-        for (int i = 0; i < maxAllocation.length; i++) {
-          long value = totalResources[i].getValue();
+          for (int i = 0; i < maxAllocation.length; i++) {
+            long value = totalResources[i].getValue();
 
-          if (value > maxAllocation[i]) {
-            maxAllocation[i] = value;
+            if (value > maxAllocation[i]) {
+              maxAllocation[i] = value;
+            }
           }
         }
       } else {  // removed node
